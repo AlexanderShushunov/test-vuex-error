@@ -1,10 +1,8 @@
+import Vue from 'vue'
 import Vuex from 'vuex'
-import { mount, createLocalVue } from '@vue/test-utils'
-
 import ComponentUnderTest from './ComponentUnderTest'
 
-const localVue = createLocalVue()
-localVue.use(Vuex)
+Vue.use(Vuex)
 
 function createStore () {
   const store = {
@@ -24,20 +22,18 @@ function createStore () {
 
 describe('ComponentUnderTest', () => {
   test('Test 1', () => {
-    const store = createStore()
-    const wrapper = mount(ComponentUnderTest, {
-      localVue,
-      store
-    })
-    expect(wrapper.exists()).toBe(true)
-  })
+    let error = null
 
-  test('Test 2', () => {
-    const store = createStore()
-    const wrapper = mount(ComponentUnderTest, {
-      localVue,
-      store
-    })
-    expect(wrapper.exists()).toBe(true)
+    Vue.config.async = false
+    Vue.config.errorHandler = e => {
+      error = e
+    }
+
+    new Vue({
+      ...ComponentUnderTest,
+      store: createStore()
+    }).$mount()
+
+    expect(error).toBe(null)
   })
 })
